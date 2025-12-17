@@ -1,3 +1,7 @@
+/* =========================
+   Sections + Animations
+========================= */
+
 let activeSectionId = 'chooser-panel';
 
 function staggerFadeIn(selector) {
@@ -48,49 +52,24 @@ function showSection(sectionId, itemSelector, displayType = 'block') {
   else setSidebarActive('chooser');
 }
 
-/* ==== الرئيسي ==== */
-function showChooser() {
-  showSection('chooser-panel', '.choice-card', 'block');
-}
-function showNews() {
-  showSection('news-section', '.news-card', 'block');
-}
+function showChooser() { showSection('chooser-panel', '.choice-card', 'block'); }
+function showNews() { showSection('news-section', '.news-card', 'block'); }
 
-/* ==== المتاجر ==== */
-function showSMP() {
-  showSection('smp-section', '.rank-card', 'block');
-}
-function showBoxPVPChooser() {
-  showSection('boxpvp-chooser', '.choice-card', 'block');
-}
-function showRanks() {
-  showSection('ranks-section', '.rank-card', 'block');
-}
-function showCrates() {
-  showSection('crate-section', '.key-card-old', 'block');
-}
+function showSMP() { showSection('smp-section', '.rank-card', 'block'); }
+function showBoxPVPChooser() { showSection('boxpvp-chooser', '.choice-card', 'block'); }
+function showRanks() { showSection('ranks-section', '.rank-card', 'block'); }
+function showCrates() { showSection('crate-section', '.key-card-old', 'block'); }
 
-/* ==== أقسام جديدة ==== */
-function showOffers() {
-  showSection('offers-section', '.info-card', 'block');
-}
-function showTopSellers() {
-  showSection('topsellers-section', '.info-card', 'block');
-}
-function showBundles() {
-  showSection('bundles-section', '.info-card', 'block');
-}
-function showHowToBuy() {
-  showSection('howtobuy-section', '.howto-step', 'block');
-}
+function showOffers() { showSection('offers-section', '.info-card', 'block'); }
+function showTopSellers() { showSection('topsellers-section', '.info-card', 'block'); }
+function showBundles() { showSection('bundles-section', '.info-card', 'block'); }
+function showHowToBuy() { showSection('howtobuy-section', '.howto-step', 'block'); }
 
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-// =========================
-// 3D TILT + GLARE (Mouse Interaction)
-// =========================
+/* =========================
+   3D Tilt
+========================= */
 (function enableTiltForShopCards(){
   const selectors = ['.choice-card', '.rank-card', '.key-card-old', '.news-card', '.info-card'];
   const cards = () => document.querySelectorAll(selectors.join(','));
@@ -135,16 +114,15 @@ function scrollToTop() {
   obs.observe(document.body, { childList: true, subtree: true });
 })();
 
-
 /* =========================
-   Responsive Sidebar Toggle
+   Sidebar Toggle
 ========================= */
 function toggleSidebar(){
   document.body.classList.toggle('sidebar-open');
 }
 
 /* =========================
-   ✅ FIX: beep() حتى ما يتوقف السكربت
+   SFX (beep)
 ========================= */
 let _audioCtx = null;
 function beep(freq=520, dur=0.02, vol=0.02){
@@ -193,6 +171,7 @@ const COUPONS = {
 
 let cart = loadCart();
 let appliedCoupon = null;
+let _lastCartCount = 0;
 
 function loadCart(){
   try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
@@ -202,10 +181,24 @@ function saveCart(){
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
   updateCartBadge();
 }
+
 function updateCartBadge(){
   const count = cart.reduce((a,i)=>a+(i.qty||0),0);
+
   const badge = document.getElementById('cart-badge');
   if(badge) badge.textContent = count;
+
+  const stickyCount = document.getElementById('sticky-cart-count');
+  if(stickyCount) stickyCount.textContent = count;
+
+  const stickyBtn = document.getElementById('sticky-cart');
+  if(stickyBtn && count > _lastCartCount){
+    stickyBtn.classList.remove('pop');
+    void stickyBtn.offsetWidth; // restart animation
+    stickyBtn.classList.add('pop');
+  }
+
+  _lastCartCount = count;
 }
 
 function addToCart(item){
@@ -216,7 +209,7 @@ function addToCart(item){
 }
 
 /* =========================
-   ✅ Cart Fade In/Out
+   Cart Modal
 ========================= */
 function openCart(){
   playClick();
@@ -390,14 +383,119 @@ function renderOrders(){
   `).join("");
 }
 
-function clearOrders(){
-  playClick();
-  localStorage.removeItem(ORDERS_KEY);
+function showOrders(){
+  showSection('orders-section', null, 'block');
   renderOrders();
 }
 
+function formatOrderText(o){
+  if(!o) return "ماكو طلبات.";
+  const lines = [];
+  lines.push(`🧾 رقم الطلب: ${o.id}`);
+  lines.push(`🕒 التاريخ: ${o.date}`);
+  lines.push(`------------------------`);
+  o.items.forEach(it=>{
+    lines.push(`• ${it.qty}x ${it.title} — ${money(it.price)}`);
+  });
+  lines.push(`------------------------`);
+  lines.push(`🏷️ الخصم: ${o.coupon ? (o.coupon.label + " (" + o.coupon.code + ")") : "بدون"}`);
+  lines.push(`💰 الإجمالي: ${money(o.total)}`);
+  return lines.join("\n");
+}
+
+async function copyLastOrder(){
+  playClick();
+  const orders = loadOrders();
+  const text = formatOrderText(orders[0]);
+
+  try{
+    await navigator.clipboard.writeText(text);
+    alert("✅ تم نسخ آخر طلب");
+  }catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    alert("✅ تم نسخ آخر طلب");
+  }
+}
+
+function downloadOrdersJSON(){
+  playClick();
+  const orders = loadOrders();
+  const blob = new Blob([JSON.stringify(orders, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "vara-orders.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
 /* =========================
-   ✅ زر "أضف للسلة" تلقائياً
+   PDF Invoice (jsPDF)
+========================= */
+function exportLastOrderPDF(){
+  playClick();
+
+  const orders = loadOrders();
+  const o = orders[0];
+  if(!o){
+    alert("ماكو طلبات.");
+    return;
+  }
+
+  if(!window.jspdf || !window.jspdf.jsPDF){
+    alert("مكتبة PDF ما انحملت.\nتأكد ضفت jsPDF قبل scripts.js ونتك شغال.");
+    console.log("jsPDF missing:", window.jspdf);
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+  // ملاحظة: العربي بالـ jsPDF يحتاج خط عربي، لذلك نخليها English مرتبة
+  let y = 50;
+  doc.setFontSize(16);
+  doc.text("Vara Store - Invoice", 40, y); y += 25;
+
+  doc.setFontSize(11);
+  doc.text(`Order ID: ${o.id}`, 40, y); y += 18;
+  doc.text(`Date: ${o.date}`, 40, y); y += 18;
+
+  y += 10;
+  doc.line(40, y, 555, y); y += 18;
+
+  doc.setFontSize(12);
+  doc.text("Items:", 40, y); y += 18;
+
+  doc.setFontSize(11);
+  o.items.forEach(it=>{
+    doc.text(`${it.qty}x ${it.title}  -  ${money(it.price)}`, 50, y);
+    y += 16;
+    if(y > 760){ doc.addPage(); y = 50; }
+  });
+
+  y += 10;
+  doc.line(40, y, 555, y); y += 22;
+
+  const couponText = o.coupon ? `${o.coupon.label} (${o.coupon.code})` : "None";
+  doc.text(`Coupon: ${couponText}`, 40, y); y += 18;
+
+  doc.setFontSize(13);
+  doc.text(`Total: ${money(o.total)}`, 40, y);
+
+  doc.save(`vara-invoice-${o.id}.pdf`);
+}
+
+/* =========================
+   Auto add "Add to cart" buttons
 ========================= */
 function ensureAddCartButtons(){
 
@@ -460,15 +558,11 @@ function ensureAddCartButtons(){
     if(card.dataset.hasActions==="1") return;
     card.dataset.hasActions="1";
 
-    // لازم زر موجود
     const buy = card.querySelector('.buy-btn');
     if(!buy) return;
 
-    // نخلي زر شراء بدل "اذهب"
     buy.textContent = 'شراء';
-    buy.removeAttribute('onclick');
 
-    // price افتراضي (غيّره بالـ HTML إذا تحب)
     let priceEl = card.querySelector('.price');
     if(!priceEl){
       priceEl = document.createElement('div');
@@ -497,13 +591,20 @@ function ensureAddCartButtons(){
 }
 
 /* =========================
-   ✅ زر شراء = يفتح السلة
+   Bind Buy Buttons
+   - إذا الزر عنده onclick="buy('key_daily')" نخليه مثل ما هو (يفتح Tebex)
+   - غيره: شراء = يضيف للسلة ويفتح السلة
 ========================= */
 function bindBuyButtons(){
 
-  // ranks + smp
+  // ranks + smp (شراء يفتح السلة)
   document.querySelectorAll('#ranks-section .buy-btn, #smp-section .buy-btn').forEach(btn=>{
     if(btn.dataset.bound==="1") return;
+
+    // إذا هذا زر Tebex (عنده buy() على onclick) لا نلمسه
+    const oc = (btn.getAttribute("onclick") || "");
+    if(oc.includes("buy(")) return;
+
     btn.dataset.bound="1";
     btn.onclick = null;
 
@@ -521,13 +622,17 @@ function bindBuyButtons(){
       const price = parseFloat(priceText) || 0;
 
       addToCart({ id: "rank_"+title.replace(/\s+/g,"_"), title, price });
-      openCart(); // ✅ شراء يفتح السلة
+      openCart();
     }, true);
   });
 
-  // keys
+  // keys (نفس الشي: إذا الزر Tebex لا نلمسه)
   document.querySelectorAll('#crate-section .buy-btn-old').forEach(btn=>{
     if(btn.dataset.bound==="1") return;
+
+    const oc = (btn.getAttribute("onclick") || "");
+    if(oc.includes("buy(")) return;
+
     btn.dataset.bound="1";
     btn.onclick = null;
 
@@ -545,13 +650,17 @@ function bindBuyButtons(){
       const price = parseFloat(priceText) || 0;
 
       addToCart({ id: "key_"+title.replace(/\s+/g,"_"), title, price });
-      openCart(); // ✅ شراء يفتح السلة
+      openCart();
     }, true);
   });
 
-  // info cards buy
+  // info cards buy (شراء يفتح السلة)
   document.querySelectorAll('#offers-section .buy-btn, #topsellers-section .buy-btn, #bundles-section .buy-btn').forEach(btn=>{
     if(btn.dataset.boundInfo==="1") return;
+
+    const oc = (btn.getAttribute("onclick") || "");
+    if(oc.includes("buy(")) return;
+
     btn.dataset.boundInfo="1";
 
     btn.addEventListener('click', (e)=>{
@@ -568,13 +677,13 @@ function bindBuyButtons(){
       const price = parseFloat(priceText) || 0;
 
       addToCart({ id: "bundle_"+title.replace(/\s+/g,"_"), title, price });
-      openCart(); // ✅ شراء يفتح السلة
+      openCart();
     }, true);
   });
 }
 
 /* =========================
-   ✅ زر "أضف للسلة" = لا يفتح السلة
+   Bind Add-to-Cart Buttons
 ========================= */
 function bindAddToCartButtons(){
   document.querySelectorAll('.add-cart-btn').forEach(btn=>{
@@ -612,21 +721,12 @@ function bindAddToCartButtons(){
         + title.replace(/\s+/g,"_");
 
       addToCart({ id, title, price });
-      // ❌ لا تفتح السلة
     }, true);
   });
 }
 
 /* =========================
-   Orders Section show
-========================= */
-function showOrders(){
-  showSection('orders-section', null, 'block');
-  renderOrders();
-}
-
-/* =========================
-   Search + Filter + Sort (رتب + مفاتيح)
+   Search UI
 ========================= */
 function addSearchUI(){
   const ranks = document.getElementById('ranks-section');
@@ -700,7 +800,7 @@ function addSearchUI(){
 }
 
 /* =========================
-   Countdown Timer
+   Countdown
 ========================= */
 function startCountdown(){
   const endKey = "vara_deal_end_v1";
@@ -728,7 +828,7 @@ function startCountdown(){
 }
 
 /* =========================
-   Hook SFX to hover/click cards
+   SFX binding
 ========================= */
 function bindSfx(){
   const sel = '.choice-card, .rank-card, .key-card-old, .news-card, .info-card, .buy-btn, .buy-btn-old, .add-cart-btn, .sidebar-item, .mini-btn';
@@ -741,16 +841,36 @@ function bindSfx(){
 }
 
 /* =========================
-   ✅ Init
+   ✅ Tebex Links + buy()
+========================= */
+const TEBEX = {
+  key_daily: "https://vara-webstore.tebex.io/package/7173735",
+  key_vote: "",
+  key_rare: "",
+  key_kit: "",
+  key_legendary: "",
+};
+
+function buy(key){
+  const url = TEBEX[key];
+  if(!url){
+    alert("رابط الشراء بعد ما مضاف لهذا المنتج.");
+    return;
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+/* =========================
+   Init
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
   updateCartBadge();
   addSearchUI();
   startCountdown();
 
-  ensureAddCartButtons();      // ✅ يضيف أزرار "أضف للسلة"
-  bindBuyButtons();            // ✅ شراء يفتح السلة
-  bindAddToCartButtons();      // ✅ أضف للسلة ما يفتح
+  ensureAddCartButtons();
+  bindBuyButtons();
+  bindAddToCartButtons();
   bindSfx();
 });
 
@@ -762,265 +882,3 @@ const autoBind = new MutationObserver(()=>{
   bindSfx();
 });
 autoBind.observe(document.body, { childList:true, subtree:true });
-
-let _lastCartCount = 0;
-
-function updateCartBadge(){
-  const count = cart.reduce((a,i)=>a+(i.qty||0),0);
-
-  const badge = document.getElementById('cart-badge');
-  if(badge) badge.textContent = count;
-
-  // ✅ Sticky cart counter
-  const stickyCount = document.getElementById('sticky-cart-count');
-  if(stickyCount) stickyCount.textContent = count;
-
-  // ✅ pop animation when count increases
-  const stickyBtn = document.getElementById('sticky-cart');
-  if(stickyBtn && count > _lastCartCount){
-    stickyBtn.classList.remove('pop');
-    void stickyBtn.offsetWidth; // restart animation
-    stickyBtn.classList.add('pop');
-  }
-  _lastCartCount = count;
-}
-
-function formatOrderText(o){
-  if(!o) return "ماكو طلبات.";
-  const lines = [];
-  lines.push(`🧾 رقم الطلب: ${o.id}`);
-  lines.push(`🕒 التاريخ: ${o.date}`);
-  lines.push(`------------------------`);
-  o.items.forEach(it=>{
-    lines.push(`• ${it.qty}x ${it.title} — ${money(it.price)}`);
-  });
-  lines.push(`------------------------`);
-  lines.push(`🏷️ الخصم: ${o.coupon ? (o.coupon.label + " (" + o.coupon.code + ")") : "بدون"}`);
-  lines.push(`💰 الإجمالي: ${money(o.total)}`);
-  return lines.join("\n");
-}
-
-async function copyLastOrder(){
-  playClick();
-  const orders = loadOrders();
-  const text = formatOrderText(orders[0]);
-
-  try{
-    await navigator.clipboard.writeText(text);
-    alert("✅ تم نسخ آخر طلب");
-  }catch(e){
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-    alert("✅ تم نسخ آخر طلب");
-  }
-}
-
-function downloadOrdersJSON(){
-  playClick();
-  const orders = loadOrders();
-  const blob = new Blob([JSON.stringify(orders, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "vara-orders.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
-}
-
-function exportLastOrderPDF(){
-  playClick();
-  const orders = loadOrders();
-  const o = orders[0];
-  if(!o){
-    alert("ماكو طلبات.");
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({
-    orientation: "p",
-    unit: "pt",
-    format: "a4"
-  });
-
-  let y = 40;
-
-  doc.setFontSize(18);
-  doc.text("Vara Store - Order Invoice", 40, y);
-  y += 30;
-
-  doc.setFontSize(11);
-  doc.text(`Order ID: ${o.id}`, 40, y); y += 18;
-  doc.text(`Date: ${o.date}`, 40, y); y += 25;
-
-  doc.line(40, y, 550, y);
-  y += 20;
-
-  o.items.forEach(it=>{
-    doc.text(`${it.qty}x ${it.title} - ${money(it.price)}`, 40, y);
-    y += 16;
-  });
-
-  y += 10;
-  doc.line(40, y, 550, y);
-  y += 20;
-
-  doc.text(`Discount: ${o.coupon ? o.coupon.label : "None"}`, 40, y);
-  y += 18;
-
-  doc.setFontSize(14);
-  doc.text(`Total: ${money(o.total)}`, 40, y);
-
-  doc.save(`vara-order-${o.id}.pdf`);
-}
-
-
-
-  const w = window.open("", "_blank");
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-
-  window.exportLastOrderPDF = function exportLastOrderPDF(){
-  playClick?.();
-
-  const orders = loadOrders();
-  const o = orders && orders[0];
-  if(!o){
-    alert("ماكو طلبات حتى نحولها PDF.");
-    return;
-  }
-
-  // ✅ تأكد المكتبة محملة
-  if(!window.jspdf || !window.jspdf.jsPDF){
-    alert("مكتبة PDF ما انحملت.\nتأكد ضفت jsPDF قبل scripts.js ونتك شغال.");
-    console.log("jsPDF missing:", window.jspdf);
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
-
-  let y = 40;
-  doc.setFontSize(18);
-  doc.text("Vara Store - Invoice", 40, y); y += 28;
-
-  doc.setFontSize(12);
-  doc.text(`Order ID: ${o.id}`, 40, y); y += 18;
-  doc.text(`Date: ${o.date}`, 40, y); y += 18;
-
-  doc.line(40, y, 555, y); y += 20;
-
-  o.items.forEach(it=>{
-    doc.text(`${it.qty}x ${it.title} - ${money(it.price)}`, 40, y);
-    y += 16;
-    if(y > 760){ doc.addPage(); y = 40; }
-  });
-
-  y += 10;
-  doc.line(40, y, 555, y); y += 20;
-
-  doc.text(`Discount: ${o.coupon ? (o.coupon.label + " (" + o.coupon.code + ")") : "None"}`, 40, y); y += 18;
-  doc.setFontSize(14);
-  doc.text(`Total: ${money(o.total)}`, 40, y);
-
-  // ✅ تنزيل مؤكد
-  doc.save(`vara-invoice-${o.id}.pdf`);
-};
-
-async function downloadLastInvoicePDF(){
-  playClick();
-
-  const orders = loadOrders();
-  const o = orders[0];
-  if(!o){
-    alert("ماكو طلبات حتى تنزل فاتورة.");
-    return;
-  }
-
-  // jsPDF
-  const { jsPDF } = window.jspdf || {};
-  if(!jsPDF){
-    alert("مكتبة PDF ما تحملت. تأكد ضايف jsPDF قبل scripts.js");
-    return;
-  }
-
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
-
-  // ملاحظة: jsPDF ما يدعم العربي مضبوط بدون خط عربي
-  // فنسوي فاتورة إنكليزي بسيطة + أرقام، وتبقى مرتبة
-  let y = 50;
-  doc.setFontSize(16);
-  doc.text("Vara Store - Invoice", 40, y); y += 25;
-
-  doc.setFontSize(11);
-  doc.text(`Order ID: ${o.id}`, 40, y); y += 18;
-  doc.text(`Date: ${o.date}`, 40, y); y += 18;
-
-  y += 10;
-  doc.line(40, y, 555, y); y += 18;
-
-  doc.setFontSize(12);
-  doc.text("Items:", 40, y); y += 18;
-
-  doc.setFontSize(11);
-  o.items.forEach(it=>{
-    doc.text(`${it.qty}x ${it.title}  -  ${money(it.price)}`, 50, y);
-    y += 16;
-    if(y > 760){ doc.addPage(); y = 50; }
-  });
-
-  y += 10;
-  doc.line(40, y, 555, y); y += 22;
-
-  const couponText = o.coupon ? `${o.coupon.label} (${o.coupon.code})` : "None";
-  doc.text(`Coupon: ${couponText}`, 40, y); y += 18;
-
-  doc.setFontSize(13);
-  doc.text(`Total: ${money(o.total)}`, 40, y);
-
-  doc.save(`vara-invoice-${o.id}.pdf`);
-}
-
-const TEBEX = {
-  daily: "",
-  vote:  "",
-  rare:  "",
-  kit:   "",
-};
-
-function buy(key){
-  const url = TEBEX[key];
-  if(!url){
-    alert("رابط الشراء بعد ما مضاف");
-    return;
-  }
-  window.open(url, "_blank");
-}
-
-const TEBEX = {
-  key_daily: "https://vara-webstore.tebex.io/package/7173735",
-  // نخلي البقية فاضية هسه
-  key_vote: "",
-  key_rare: "",
-  key_kit: "",
-  key_legendary: "",
-};
-
-function buy(key){
-  const url = TEBEX[key];
-  if(!url){
-    alert("هذا المنتج غير متوفر حالياً");
-    return;
-  }
-  window.open(url, "_blank", "noopener,noreferrer");
-}
-
