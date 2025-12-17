@@ -1006,3 +1006,21 @@ function buy(key){
   window.open(url, "_blank");
 }
 
+const TEBEX = {
+  key_daily: "https://vara-webstore.tebex.io/package/7173735",
+  // نخلي البقية فاضية هسه
+  key_vote: "",
+  key_rare: "",
+  key_kit: "",
+  key_legendary: "",
+};
+
+function buy(key){
+  const url = TEBEX[key];
+  if(!url){
+    alert("هذا المنتج غير متوفر حالياً");
+    return;
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
