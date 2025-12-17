@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vara Store - متجر احترافي</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body onload="showChooser()">
+
+  <div class="container">
+
+    <!-- ✅ SIDEBAR (مرة وحدة فقط) -->
+    <aside class="sidebar">
+      <div class="logo-title sidebar-logo-title">
+        <span style="color: var(--primary-color);">VARA</span> STORE
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-item active" data-nav="chooser" onclick="showChooser()">
+          <i class="fas fa-grip-horizontal"></i> اختيار الأقسام
+        </a>
+
+        <a href="#" class="sidebar-item" data-nav="news" onclick="showNews()">
+          <i class="fas fa-bullhorn"></i> الأخبار والترويج
+        </a>
+      </nav>
+
+      <button class="mini-btn" onclick="showOrders()">
+        <i class="fas fa-receipt"></i>
+        <span class="btn-label">طلباتي</span>
+      </button>
+
+      <button class="mini-btn" onclick="openCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="btn-label">السلة</span>
+        <span id="cart-badge" class="cart-badge">0</span>
+      </button>
+    </aside>
+
+    <!-- ✅ MAIN (مرة وحدة فقط) -->
+    <main class="content-area">
+
+      <!-- ✅ صفحة اختيار الأقسام -->
+      <section class="store-section chooser-panel" id="chooser-panel" style="display:block;">
+        <div class="hero-strip">
+          <div class="hero-left">
+            <h1 class="section-title">اختر فئة المنتجات</h1>
+            <p class="hero-sub">واجهة مرتبة + عروض + باقات + الأكثر مبيعاً — كلشي بمكانه.</p>
+
+            <div class="mini-stats">
+              <div class="deal-timer">
+                ⏳ ينتهي العرض خلال:
+                <strong id="deal-countdown">--:--:--</strong>
+              </div>
+
+              <div class="stat-pill"><i class="fa-solid fa-fire"></i> عروض شغّالة</div>
+              <div class="stat-pill"><i class="fa-solid fa-bolt"></i> تسليم سريع</div>
+              <div class="stat-pill"><i class="fa-solid fa-shield-halved"></i> دفع آمن</div>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <div class="hero-card">
+              <div class="hero-badge"><i class="fa-solid fa-star"></i> Featured</div>
+              <h3>عرض الأسبوع</h3>
+              <p>خصم خاص على رتب Box PVP + هدية مفتاح مجاني.</p>
+              <button class="buy-btn" onclick="showOffers()">شوف العروض</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="choice-grid rich-grid">
+          <div class="choice-card super-card" onclick="showSMP()">
+            <div class="card-badge badge-blue">SMP</div>
+            <i class="fas fa-hammer"></i>
+            <h2>متجر SMP</h2>
+            <p>سبونرات وموارد قوية للـ Survival.</p>
+            <div class="card-actions">
+              <button class="buy-btn">تصفح SMP</button>
+            </div>
+          </div>
+
+          <div class="choice-card super-card" onclick="showBoxPVPChooser()">
+            <div class="card-badge badge-gold">Box PVP</div>
+            <i class="fas fa-box"></i>
+            <h2>متجر Box PVP</h2>
+            <p>الرتب والمفاتيح الحصرية للـ Box.</p>
+            <div class="card-actions">
+              <button class="buy-btn">اذهب للبوكس</button>
+            </div>
+          </div>
+
+          <div class="choice-card super-card" onclick="showOffers()">
+            <div class="card-badge badge-red">SALE</div>
+            <i class="fas fa-tags"></i>
+            <h2>العروض والباقات</h2>
+            <p>خصومات + باقات قيمة + وقت محدود.</p>
+            <div class="card-actions">
+              <button class="buy-btn">شوف العروض</button>
+            </div>
+          </div>
+
+          <div class="choice-card super-card" onclick="showTopSellers()">
+            <div class="card-badge badge-purple">TOP</div>
+            <i class="fas fa-crown"></i>
+            <h2>الأكثر مبيعاً</h2>
+            <p>أفضل المنتجات اللي الناس تشتريها.</p>
+            <div class="card-actions">
+              <button class="buy-btn">تصفح</button>
+            </div>
+          </div>
+
+          <div class="choice-card super-card" onclick="showBundles()">
+            <div class="card-badge badge-green">BUNDLE</div>
+            <i class="fas fa-layer-group"></i>
+            <h2>باقات جاهزة</h2>
+            <p>رتبة + مفاتيح + هدايا بسعر أقوى.</p>
+            <div class="card-actions">
+              <button class="buy-btn">شوف الباقات</button>
+            </div>
+          </div>
+
+          <div class="choice-card super-card" onclick="showHowToBuy()">
+            <div class="card-badge badge-gray">HELP</div>
+            <i class="fas fa-circle-question"></i>
+            <h2>شلون أشتري؟</h2>
+            <p>خطوات الشراء + طرق الدفع + الدعم.</p>
+            <div class="card-actions">
+              <button class="buy-btn">عرض التفاصيل</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ Box PVP Chooser -->
+      <section class="store-section chooser-panel" id="boxpvp-chooser" style="display:none;">
+        <h1 class="section-title">Box PVP | اختر محتوى المتجر</h1>
+
+        <div class="choice-grid">
+          <div class="choice-card super-card slim-card" onclick="showRanks()">
+            <div class="card-badge badge-gold">RANKS</div>
+            <i class="fas fa-crown"></i>
+            <h2>الرتب المتميزة</h2>
+            <p>ارتق بمستواك بميزات حصرية.</p>
+            <button class="buy-btn">تصفح الرتب</button>
+          </div>
+
+          <div class="choice-card super-card slim-card" onclick="showCrates()">
+            <div class="card-badge badge-blue">KEYS</div>
+            <i class="fas fa-key"></i>
+            <h2>مفاتيح الصناديق</h2>
+            <p>احصل على مفاتيحك لفتح الصناديق.</p>
+            <button class="buy-btn">تصفح المفاتيح</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ عروض -->
+      <section class="store-section" id="offers-section" style="display:none;">
+        <h1 class="section-title"><i class="fas fa-tags"></i> العروض والباقات</h1>
+
+        <div class="cards-grid">
+          <div class="info-card hot">
+            <div class="info-title">🔥 خصم 25% على Diamond</div>
+            <p class="info-desc">لمدة 48 ساعة فقط. العرض ينتهي قريباً.</p>
+            <button class="buy-btn" onclick="showRanks()">اذهب للرتب</button>
+          </div>
+
+          <div class="info-card new">
+            <div class="info-title">🎁 باقة “Starter”</div>
+            <p class="info-desc">رتبة Gold + 2 مفاتيح يومية + هدية.</p>
+            <button class="buy-btn" onclick="showBundles()">شوف الباقات</button>
+          </div>
+
+          <div class="info-card vip">
+            <div class="info-title">⭐ عرض VIP</div>
+            <p class="info-desc">رتبة Legendary + مفاتيح نادرة بسعر خاص.</p>
+            <button class="buy-btn" onclick="showBundles()">تفاصيل</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ الأكثر مبيعاً -->
+      <section class="store-section" id="topsellers-section" style="display:none;">
+        <h1 class="section-title"><i class="fas fa-crown"></i> الأكثر مبيعاً</h1>
+
+        <div class="cards-grid">
+          <div class="info-card vip">
+            <div class="info-title">Diamond Rank</div>
+            <p class="info-desc">الأكثر شهرة + /fly + ميزات قوية.</p>
+            <button class="buy-btn" onclick="showRanks()">اذهب للرتب</button>
+          </div>
+
+          <div class="info-card new">
+            <div class="info-title">Vote Key</div>
+            <p class="info-desc">الأكثر مبيعاً بمفاتيح الصناديق.</p>
+            <button class="buy-btn" onclick="showCrates()">اذهب للمفاتيح</button>
+          </div>
+
+          <div class="info-card hot">
+            <div class="info-title">Skeleton Spawner</div>
+            <p class="info-desc">الأكثر طلباً داخل SMP.</p>
+            <button class="buy-btn" onclick="showSMP()">اذهب لـ SMP</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ باقات (تم تعديلها: شراء + أضف للسلة + سعر) -->
+      <section class="store-section" id="bundles-section" style="display:none;">
+        <h1 class="section-title"><i class="fas fa-layer-group"></i> الباقات الجاهزة</h1>
+
+        <div class="cards-grid">
+          <div class="info-card vip">
+            <div class="info-title">Bundle Pro</div>
+            <p class="info-desc">Diamond + Rare Key + Kit Key (خصم خاص).</p>
+            <div class="price">$14.00</div>
+            <div class="buy-actions">
+              <button class="buy-btn">شراء</button>
+              <button class="add-cart-btn">أضف للسلة</button>
+            </div>
+          </div>
+
+          <div class="info-card new">
+            <div class="info-title">Bundle Starter</div>
+            <p class="info-desc">Gold + Daily Key + Vote Key.</p>
+            <div class="price">$7.00</div>
+            <div class="buy-actions">
+              <button class="buy-btn">شراء</button>
+              <button class="add-cart-btn">أضف للسلة</button>
+            </div>
+          </div>
+
+          <div class="info-card hot">
+            <div class="info-title">Bundle SMP Farm</div>
+            <p class="info-desc">Spawner + Eggs + دعم سريع.</p>
+            <div class="price">$9.00</div>
+            <div class="buy-actions">
+              <button class="buy-btn">شراء</button>
+              <button class="add-cart-btn">أضف للسلة</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ شلون أشتري -->
+      <section class="store-section" id="howtobuy-section" style="display:none;">
+        <h1 class="section-title"><i class="fas fa-circle-question"></i> شلون أشتري؟</h1>
+
+        <div class="howto-box">
+          <div class="howto-step"><span>1</span> اختار القسم (SMP / Box PVP / عروض / باقات)</div>
+          <div class="howto-step"><span>2</span> اضغط شراء، وراح يطلعلك تفاصيل الطلب</div>
+          <div class="howto-step"><span>3</span> الدفع (حسب طريقتك) والتسليم يكون سريع</div>
+          <div class="howto-step"><span>4</span> إذا صارت مشكلة، تواصل ويانه بالدعم</div>
+          <button class="buy-btn" onclick="showNews()">اذهب للأخبار/الدعم</button>
+        </div>
+      </section>
+
+      <!-- ✅ SMP -->
+      <section class="store-section" id="smp-section" style="display:none;">
+        <div class="rank-grid">
+          <div class="rank-card">
+            <div class="rank-header gold-bg">Zombie Spawner</div>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> سبونر زومبي جاهز</li>
+              <li><i class="fas fa-check"></i> معدل تفقيس عالي</li>
+              <li><i class="fas fa-check"></i> يتضمن 32 بيضة</li>
+              <li><i class="fas fa-times"></i> لا يدعم تعديل الارتفاع</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$4.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Zombie Spawner: $4.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rank-card popular">
+            <div class="rank-header diamond-bg">Skeleton Spawner</div>
+            <p class="popular-ribbon popular-red-ribbon">الأكثر طلباً</p>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> سبونر سكلتون جاهز</li>
+              <li><i class="fas fa-check"></i> معدل تفقيس عالي جداً</li>
+              <li><i class="fas fa-check"></i> يتضمن 64 بيضة</li>
+              <li><i class="fas fa-check"></i> يدعم تعديل الارتفاع</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$6.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Skeleton Spawner: $6.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rank-card">
+            <div class="rank-header emerald-bg">Cow Spawner</div>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> سبونر بقر</li>
+              <li><i class="fas fa-check"></i> لحم + جلد</li>
+              <li><i class="fas fa-check"></i> يتضمن 16 بيضة</li>
+              <li><i class="fas fa-times"></i> لا يدعم تعديل الارتفاع</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$3.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Cow Spawner: $3.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ الرتب -->
+      <section class="store-section" id="ranks-section" style="display:none;">
+        <div class="rank-grid">
+          <div class="rank-card">
+            <div class="rank-header gold-bg">Gold</div>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> /kit Gold</li>
+              <li><i class="fas fa-check"></i> 5 أراضي إضافية</li>
+              <li><i class="fas fa-check"></i> مضاعف خبرة 1.5x</li>
+              <li><i class="fas fa-times"></i> الطيران</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$5.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Gold Rank: $5.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rank-card">
+            <div class="rank-header emerald-bg">Emerald</div>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> /kit Emerald</li>
+              <li><i class="fas fa-check"></i> 8 أراضي إضافية</li>
+              <li><i class="fas fa-check"></i> مضاعف خبرة 1.7x</li>
+              <li><i class="fas fa-times"></i> الطيران</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$8.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Emerald Rank: $8.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rank-card popular">
+            <div class="rank-header diamond-bg">Diamond</div>
+            <p class="popular-ribbon popular-red-ribbon">الأكثر شهرة</p>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> /kit Diamond</li>
+              <li><i class="fas fa-check"></i> 12 أرض إضافية</li>
+              <li><i class="fas fa-check"></i> مضاعف خبرة 2.0x</li>
+              <li><i class="fas fa-check"></i> الطيران (/fly)</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$12.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Diamond Rank: $12.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rank-card">
+            <div class="rank-header platinum-bg">Platinum</div>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> /kit Platinum</li>
+              <li><i class="fas fa-check"></i> 18 أرض إضافية</li>
+              <li><i class="fas fa-check"></i> مضاعف خبرة 2.5x</li>
+              <li><i class="fas fa-check"></i> الطيران (/fly)</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$18.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Platinum Rank: $18.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rank-card">
+            <div class="rank-header legendary-bg">Legendary</div>
+            <ul class="rank-features">
+              <li><i class="fas fa-check"></i> /kit Legendary</li>
+              <li><i class="fas fa-check"></i> 25 أراضي إضافية</li>
+              <li><i class="fas fa-check"></i> مضاعف خبرة 3.0x</li>
+              <li><i class="fas fa-check"></i> طيران دائم</li>
+            </ul>
+            <div class="rank-footer">
+              <span class="price">$25.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn" onclick="alert('شراء Legendary Rank: $25.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ المفاتيح -->
+      <section class="store-section" id="crate-section" style="display:none;">
+        <div class="key-grid-old">
+          <div class="key-card-old">
+            <div class="key-header daily-key-bg-old">
+              <i class="fas fa-box-open"></i> Daily Key
+            </div>
+            <div class="key-content-old">
+              <p>مفتاح يومي لجوائز خفيفة وفلوس بسيطة.</p>
+            </div>
+            <div class="key-footer-old">
+              <span class="price">$1.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn-old" onclick="alert('شراء Daily Key: $1.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="key-card-old popular">
+            <div class="key-header vote-key-bg-old">
+              <i class="fas fa-poll-h"></i> Vote Key
+            </div>
+            <p class="popular-ribbon popular-red-ribbon">الأكثر مبيعاً</p>
+            <div class="key-content-old">
+              <p>مفتاح التصويت: جوائز أحسن + مكافآت إضافية.</p>
+            </div>
+            <div class="key-footer-old">
+              <span class="price">$2.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn-old" onclick="alert('شراء Vote Key: $2.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="key-card-old">
+            <div class="key-header rare-key-bg-old">
+              <i class="fas fa-star"></i> Rare Key
+            </div>
+            <div class="key-content-old">
+              <p>جوائز نادرة: سيوف/دروع/كيتات قوية.</p>
+            </div>
+            <div class="key-footer-old">
+              <span class="price">$4.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn-old" onclick="alert('شراء Rare Key: $4.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="key-card-old">
+            <div class="key-header kit-key-bg-old">
+              <i class="fas fa-boxes"></i> Kit Key
+            </div>
+            <div class="key-content-old">
+              <p>يفتح كيتات جاهزة للـ PvP.</p>
+            </div>
+            <div class="key-footer-old">
+              <span class="price">$3.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn-old" onclick="alert('شراء Kit Key: $3.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="key-card-old">
+            <div class="key-header legendary-bg">
+              <i class="fas fa-crown"></i> Legendary Key
+            </div>
+            <div class="key-content-old">
+              <p>أفضل مفتاح بالسيرفر: جوائز أسطورية ومحدودة.</p>
+            </div>
+            <div class="key-footer-old">
+              <span class="price">$7.00</span>
+              <div class="buy-actions">
+                <button class="buy-btn-old" onclick="alert('شراء Legendary Key: $7.00')">شراء</button>
+                <button class="add-cart-btn">أضف للسلة</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ✅ الأخبار -->
+      <section class="store-section" id="news-section" style="display:none;">
+        <!-- محتواك الأصلي للأخبار -->
+      </section>
+
+      <!-- ✅ طلباتي -->
+      <section class="store-section" id="orders-section" style="display:none;">
+        <h1 class="section-title"><i class="fas fa-receipt"></i> طلباتي</h1>
+        <p style="color:#aaa; margin-top:-20px;">هنا تشوف آخر الطلبات اللي سويتها من هذا الجهاز.</p>
+
+        <div id="orders-list" class="orders-list"></div>
+<div class="orders-actions">
+  <button class="add-cart-btn" onclick="copyLastOrder()">نسخ آخر طلب</button>
+  <button class="add-cart-btn" onclick="exportLastOrderPDF()">تحميل PDF</button>
+  <button class="add-cart-btn" onclick="downloadOrdersJSON()">تحميل الطلبات JSON</button>
+</div>
+
+<div id="orders-list" class="orders-list"></div>
+
+</div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 جميع الحقوق محفوظة لـ Vara Store</p>
+  </footer>
+
+  <script src="scripts.js"></script>
+
+  <!-- ✅ Cart Modal -->
+  <div id="cart-modal" class="cart-modal" style="display:none;">
+    <div class="cart-backdrop" onclick="closeCart()"></div>
+
+    <div class="cart-panel" role="dialog" aria-modal="true">
+      <div class="cart-head">
+        <h2><i class="fas fa-shopping-cart"></i> سلة الشراء</h2>
+        <button class="cart-close" onclick="closeCart()">✕</button>
+      </div>
+
+      <div id="cart-items" class="cart-items"></div>
+
+      <div class="cart-coupon">
+        <label>كود خصم</label>
+        <div class="coupon-row">
+          <input id="coupon-input" type="text" placeholder="مثال: VARA10">
+          <button class="buy-btn" onclick="applyCoupon()">تطبيق</button>
+        </div>
+        <small id="coupon-msg" style="color:#aaa;"></small>
+      </div>
+
+      <div class="cart-totals">
+        <div><span>المجموع</span><strong id="cart-subtotal">$0.00</strong></div>
+        <div><span>الخصم</span><strong id="cart-discount">$0.00</strong></div>
+        <div class="cart-total-line"><span>الإجمالي</span><strong id="cart-total">$0.00</strong></div>
+      </div>
+
+      <div class="cart-actions">
+        <button class="buy-btn" onclick="checkout()">تأكيد الطلب</button>
+        <button class="buy-btn-old" onclick="clearCart()">تفريغ السلة</button>
+      </div>
+    </div>
+  </div>
+
+
+<!-- ✅ Sticky Cart Floating Button -->
+<button id="sticky-cart" class="sticky-cart" onclick="openCart()" aria-label="فتح السلة">
+  <i class="fas fa-shopping-cart"></i>
+  <span class="sticky-count" id="sticky-cart-count">0</span>
+</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="scripts.js"></script>
+
+<button class="add-cart-btn" onclick="exportLastOrderPDF()">تحميل الفاتورة PDF</button>
+<button class="buy-btn-old" onclick="downloadLastInvoicePDF()">تحميل الفاتورة PDF</button>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="scripts.js"></script>
+
+  
+</body>
+</html>
