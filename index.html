@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vara Store - متجر احترافي</title>
+  <title>Vara Store </title>
+
+  <!-- ✅ jsPDF مرة وحدة فقط -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
@@ -211,7 +213,7 @@
         </div>
       </section>
 
-      <!-- ✅ باقات (تم تعديلها: شراء + أضف للسلة + سعر) -->
+      <!-- ✅ باقات -->
       <section class="store-section" id="bundles-section" style="display:none;">
         <h1 class="section-title"><i class="fas fa-layer-group"></i> الباقات الجاهزة</h1>
 
@@ -500,22 +502,18 @@
         <!-- محتواك الأصلي للأخبار -->
       </section>
 
-      <!-- ✅ طلباتي -->
+      <!-- ✅ طلباتي (مصلّح) -->
       <section class="store-section" id="orders-section" style="display:none;">
         <h1 class="section-title"><i class="fas fa-receipt"></i> طلباتي</h1>
         <p style="color:#aaa; margin-top:-20px;">هنا تشوف آخر الطلبات اللي سويتها من هذا الجهاز.</p>
 
         <div id="orders-list" class="orders-list"></div>
-<div class="orders-actions">
-  <button class="add-cart-btn" onclick="copyLastOrder()">نسخ آخر طلب</button>
-  <button class="add-cart-btn" onclick="exportLastOrderPDF()">تحميل PDF</button>
-  <button class="add-cart-btn" onclick="downloadOrdersJSON()">تحميل الطلبات JSON</button>
-</div>
 
-<div id="orders-list" class="orders-list"></div>
-
-</div>
-
+        <div class="orders-actions">
+          <button class="add-cart-btn" onclick="copyLastOrder()">نسخ آخر طلب</button>
+          <button class="add-cart-btn" onclick="exportLastOrderPDF()">تحميل PDF</button>
+          <button class="add-cart-btn" onclick="downloadOrdersJSON()">تحميل الطلبات JSON</button>
+        </div>
       </section>
 
     </main>
@@ -524,8 +522,6 @@
   <footer>
     <p>&copy; 2025 جميع الحقوق محفوظة لـ Vara Store</p>
   </footer>
-
-  <script src="scripts.js"></script>
 
   <!-- ✅ Cart Modal -->
   <div id="cart-modal" class="cart-modal" style="display:none;">
@@ -561,21 +557,14 @@
     </div>
   </div>
 
+  <!-- ✅ Sticky Cart Floating Button -->
+  <button id="sticky-cart" class="sticky-cart" onclick="openCart()" aria-label="فتح السلة">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="sticky-count" id="sticky-cart-count">0</span>
+  </button>
 
-<!-- ✅ Sticky Cart Floating Button -->
-<button id="sticky-cart" class="sticky-cart" onclick="openCart()" aria-label="فتح السلة">
-  <i class="fas fa-shopping-cart"></i>
-  <span class="sticky-count" id="sticky-cart-count">0</span>
-</button>
+  <!-- ✅ scripts.js مرة وحدة فقط -->
+  <script src="scripts.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="scripts.js"></script>
-
-<button class="add-cart-btn" onclick="exportLastOrderPDF()">تحميل الفاتورة PDF</button>
-<button class="buy-btn-old" onclick="downloadLastInvoicePDF()">تحميل الفاتورة PDF</button>
-<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="scripts.js"></script>
-
-  
 </body>
 </html>
