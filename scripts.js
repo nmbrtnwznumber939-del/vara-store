@@ -990,3 +990,19 @@ async function downloadLastInvoicePDF(){
   doc.save(`vara-invoice-${o.id}.pdf`);
 }
 
+const TEBEX = {
+  daily: "",
+  vote:  "",
+  rare:  "",
+  kit:   "",
+};
+
+function buy(key){
+  const url = TEBEX[key];
+  if(!url){
+    alert("رابط الشراء بعد ما مضاف");
+    return;
+  }
+  window.open(url, "_blank");
+}
+
